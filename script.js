@@ -5,9 +5,9 @@ const ctx = canvas.getContext("2d");
 canvas.width = 300;
 canvas.height = 600; ``
 
-const ROWS = 20;        // Число строк игрового поля
-const COLS = 10;        // Число столбцов игрового поля
-const BLOCK_SIZE = canvas.width / COLS; // Размер одного блока, рассчитывается исходя из ширины канваса
+const ROWS = 20;
+const COLS = 10;
+const BLOCK_SIZE = canvas.width / COLS;
 
 let arena = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
 
@@ -22,16 +22,16 @@ const tetrominoes = {
 };
 
 let player = { position: { x: 4, y: 0 }, matrix: [], color: "" };
-// let nextPiece = getRandomTetromino(); // Следующая фигура, которую увидит игрок в предпросмотре
+
 
 let score = 0;
 let level = 1;
 let clearedLines = 0;
-const linesPerLevel = 5; // Сколько линий нужно очистить для повышения уровня
-let gameSpeed = 500;     // Интервал (в мс) между автоматическим падениями фигур
+const linesPerLevel = 5;
+let gameSpeed = 500;
 let lastTime = 0;
 let dropCounter = 0;
-const dropInterval = gameSpeed; // gameSpeed в мс, например, 500
+const dropInterval = gameSpeed;
 
 
 
@@ -45,10 +45,10 @@ function resetPlayer() {
     player = getRandomTetromino();
     player.position = { x: Math.floor(COLS / 2) - 1, y: 0 };
 
-    // let nextPiece = getRandomTetromino();
-    // drawPreview(); // Обновляем предпросмотр следующей фигуры
 
-    // Если фигура появляется и сразу сталкивается с заполненной областью – игра заканчивается
+
+
+
     if (collides(arena, player)) {
         alert("Игра окончена!");
         arena = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
@@ -63,7 +63,7 @@ function drawMatrix(matrix, offset, color, context = ctx) {
     matrix.forEach((row, y) => {
         row.forEach((value, x) => {
             if (value !== 0) {
-                // Если значение -1, значит это мигающий блок при очистке строки
+
                 context.fillStyle = value === -1 ? "white" : color;
                 context.fillRect((x + offset.x) * BLOCK_SIZE, (y + offset.y) * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
                 context.strokeStyle = "black";
@@ -76,11 +76,11 @@ function drawMatrix(matrix, offset, color, context = ctx) {
 function draw() {
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    // Рисуем арену (статичные фигуры)
+
     drawMatrix(arena, { x: 0, y: 0 }, "gray");
-    // Рисуем текущую фигуру игрока
+
     drawMatrix(player.matrix, player.position, player.color);
-    // Обновляем интерфейс
+
     document.getElementById("score").textContent = score;
     document.getElementById("level").textContent = level;
 }
@@ -106,37 +106,37 @@ function collides(arena, player) {
 function moveDown() {
     player.position.y++;
     if (collides(arena, player)) {
-        player.position.y--; // Возвращаем на шаг назад, если столкновение обнаружено
+        player.position.y--;
         merge(arena, player);
-        clearLines();  // После слияния пытаемся удалить заполненные линии
-        resetPlayer(); // Сбрасываем фигуру
+        clearLines();
+        resetPlayer();
     }
 }
 
 function clearLines() {
     let linesToRemove = [];
 
-    // Ищем полные линии (каждая ячейка не равна 0)
+
     for (let y = arena.length - 1; y >= 0; y--) {
         if (arena[y].every(cell => cell !== 0)) {
             linesToRemove.push(y);
         }
     }
 
-    // if (linesToRemove.length > 0) {
-    //     playSound("clear"); // Воспроизводим звук очистки
-    //     // Для визуального эффекта: меняем цвет строки (например, на белый)
-    //     linesToRemove.forEach(y => {
-    //         arena[y] = arena[y].map(() => -1);
-    //     });
 
-    // Через небольшую задержку удаляем строки
+
+
+
+
+
+
+
     setTimeout(() => {
         linesToRemove.forEach(y => {
             arena.splice(y, 1);
             arena.unshift(Array(COLS).fill(0));
         });
-        // Обновляем очки
+
         score += [0, 40, 100, 300, 1200][linesToRemove.length] * level;
         clearedLines += linesToRemove.length;
         updateLevel();
@@ -148,12 +148,12 @@ function updateLevel() {
     if (clearedLines >= linesPerLevel) {
         level++;
         clearedLines = 0;
-        gameSpeed *= 0.9; // С каждым уровнем фигуры падают быстрее (уменьшение интервала)
+        gameSpeed *= 0.9;
     }
 }
 
 function rotate(matrix) {
-    // Поворот на 90° по часовой стрелке: транспонирование и разворот строк
+
     return matrix[0].map((_, i) => matrix.map(row => row[i])).reverse();
 }
 
@@ -161,7 +161,7 @@ function playerRotate() {
     const rotated = rotate(player.matrix);
     if (!collides(arena, { position: player.position, matrix: rotated })) {
         player.matrix = rotated;
-        // playSound("rotate");
+
     }
 }
 
@@ -169,25 +169,25 @@ function hardDrop() {
     while (!collides(arena, player)) {
         player.position.y++;
     }
-    player.position.y--; // Откатываем последний шаг, где произошло столкновение
+    player.position.y--;
     merge(arena, player);
     clearLines();
     resetPlayer();
-    // playSound("drop");
+
 }
 
 document.addEventListener("keydown", (event) => {
     if (event.key === "ArrowLeft") {
         player.position.x--;
-        // playSound("move");
+
     }
     if (event.key === "ArrowRight") {
         player.position.x++;
-        // playSound("move");
+
     }
     if (event.key === "ArrowDown") {
         moveDown();
-        // playSound("drop");
+
     }
     if (event.key === "ArrowUp") {
         playerRotate();
@@ -197,14 +197,14 @@ document.addEventListener("keydown", (event) => {
     }
 });
 
-// const previewCanvas = document.getElementById("previewCanvas");
-// const previewCtx = previewCanvas.getContext("2d");
-// previewCtx.scale(20, 20); // Масштабируем, чтобы фигура отображалась в миниатюре
 
-// function drawPreview() {
-//     previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
-//     drawMatrix(nextPiece.matrix, { x: 1, y: 1 }, nextPiece.color, previewCtx);
-// }
+
+
+
+
+
+
+
 
 function update(time = 0) {
     const deltaTime = time - lastTime;
