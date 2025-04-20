@@ -45,10 +45,6 @@ function resetPlayer() {
     player = getRandomTetromino();
     player.position = { x: Math.floor(COLS / 2) - 1, y: 0 };
 
-
-
-
-
     if (collides(arena, player)) {
         alert("Игра окончена!");
         arena = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
@@ -123,14 +119,6 @@ function clearLines() {
         }
     }
 
-
-
-
-
-
-
-
-
     setTimeout(() => {
         linesToRemove.forEach(y => {
             arena.splice(y, 1);
@@ -196,15 +184,6 @@ document.addEventListener("keydown", (event) => {
         hardDrop();
     }
 });
-
-
-
-
-
-
-
-
-
 
 function update(time = 0) {
     const deltaTime = time - lastTime;
